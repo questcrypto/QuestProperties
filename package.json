@@ -1,0 +1,32 @@
+{
+  "name": "questproperties",
+  "version": "1.0.0",
+  "description": "Final property multi-token creation",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/questcrypto/QuestProperties.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/questcrypto/QuestProperties/issues"
+  },
+  "homepage": "https://github.com/questcrypto/QuestProperties#readme",
+  "dependencies": {
+    "@openzeppelin/contracts-upgradeable": "^4.4.0",
+    "@openzeppelin/truffle-upgrades": "^1.11.0",
+    "@truffle/hdwallet-provider": "^2.0.0",
+    "dotenv": "^10.0.0"
+  },
+  "devDependencies": {
+    "truffle-plugin-verify": "^0.5.18"
+  }
+}
