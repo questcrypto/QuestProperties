@@ -14,8 +14,7 @@ contract QuestFactory is Initializable, OwnableUpgradeable, PausableUpgradeable,
 
   address immutable logicAddress;
 
-
-
+  
   event TokenDeployed(address tokenAddress);
 
   function initialize() public virtual initializer whenNotPaused {

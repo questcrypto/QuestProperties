@@ -127,17 +127,16 @@ contract QuestProperties is Initializable, ERC1155Upgradeable, ERC1155HolderUpgr
         return (id,price);
     }
 
-    function mintBatchNFTs (uint256[] memory ids, uint256[] memory amounts, bytes memory data, uint256[] memory prices) external virtual payable onlyRole(TREASURY_ROLE) returns(uint256[] memory, uint256[] memory) {
+    function mintBatchNFTs (uint256[] memory ids, uint256[] memory amounts, bytes memory data, uint256[] memory prices) external virtual payable onlyRole(TREASURY_ROLE) returns(uint256[] memory _ids, uint256[] memory _prices) {
         require(ids.length == prices.length, 'Quest: ids and prices length mismatch');
         _mintBatch(address(this), ids, amounts, data);
         uint j = 0;
         uint len = ids.length;
-        for (j = 0; j <= len; j++) { //for loop example
-        properties[ids[j]].tokens.push(Token(ids[j],prices[j]));
+        for (j = 0; j <= len; j++) { 
+            properties[ids[j]].tokens.push(Token(ids[j],prices[j]));
         }
-
-        return(ids[],prices[]);
-        
+        //returns two arrays, one with the ids and one with the prices
+        return (ids, prices);
     }
         
 
@@ -189,11 +188,4 @@ contract QuestProperties is Initializable, ERC1155Upgradeable, ERC1155HolderUpgr
             }
         }
     }
-
-
-
 }
-
-
-
-
