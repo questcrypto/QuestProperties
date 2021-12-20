@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/questcrypto/QuestProperties#readme",
   "dependencies": {
+    "@openzeppelin/contracts": "^4.4.1",
     "@openzeppelin/contracts-upgradeable": "^4.4.0",
     "@openzeppelin/truffle-upgrades": "^1.11.0",
     "@truffle/hdwallet-provider": "^2.0.0",

@@ -2,14 +2,17 @@
 pragma solidity ^0.8.10;
 
 import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
-import '@openzeppelin/contracts-upgradeable/token/ERC1155/presets/ERC1155PresetMinterPauserUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol';
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import '@openzeppelin/contracts-upgradeable/token/ERC1155/utils/ERC1155HolderUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol';
 
-contract QuestProperties is Initializable, ERC1155PresetMinterPauserUpgradeable, ERC1155HolderUpgradeable, UUPSUpgradeable {
+contract QuestProperties is Initializable, ERC1155Upgradeable, ERC1155HolderUpgradeable, AccessControlUpgradeable, UUPSUpgradeable {
     using CountersUpgradeable for CountersUpgradeable.Counter;
     CountersUpgradeable.Counter propertyIds;
+
 
 
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
@@ -18,18 +21,24 @@ contract QuestProperties is Initializable, ERC1155PresetMinterPauserUpgradeable,
     string public contractName;
     string public description;
     uint256 private propertyId;
+    uint8 private currentVersion;
+
+
+    struct Token{
+        uint256 id;
+        uint256 price;
+    }
 
     struct Property{
         bytes parentHash;
         address propAddress;
-        uint256 tokenId;
-        uint256 tokenPrice;
+        Token[] tokens;
     }
 
-    Property[] properties;
 
+    mapping(uint256 => Property) private properties;
     mapping(uint256 => uint256) private _totalSupply;
-    mapping(uint256=> uint256) public tokenPrices;
+
 
     event PropertyAdded(uint256 propertyId, address property, bytes MerkleTree);
 
@@ -40,8 +49,11 @@ contract QuestProperties is Initializable, ERC1155PresetMinterPauserUpgradeable,
     uint256 public constant RENT_RIGHT = 4;
     uint256 public constant MGMT_RIGHT = 5;
 
-    function initialize(address treasury, address upgrader, string memory uri) external initializer {
-        __ERC1155PresetMinterPauser_init(uri);
+    uint256[] availableTokens;
+
+    function initialize(address treasury, address upgrader, string memory uri) external virtual initializer {
+        __ERC1155_init(uri);
+        __AccessControl_init();
         __ERC1155Receiver_init();
         __ERC1155Holder_init();
         __UUPSUpgradeable_init();
@@ -51,26 +63,34 @@ contract QuestProperties is Initializable, ERC1155PresetMinterPauserUpgradeable,
         _setupRole(UPGRADER_ROLE, upgrader);
     }
 
-    function approvedProperty(bytes memory _parentHash, address _propAddress, string memory _contractName, string memory _description) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+    function approvedProperty(
+        bytes memory _parentHash, 
+        address _propAddress, 
+        string memory _contractName, 
+        string memory _description
+        ) 
+        external 
+        virtual 
+        onlyRole(DEFAULT_ADMIN_ROLE) 
+        {
         propertyIds.increment();
         propertyId= propertyIds.current();
         properties[propertyId].parentHash = _parentHash;
         properties[propertyId].propAddress = _propAddress;
-        //properties.push(Property);
+  
         contractName = _contractName;
         description = _description;
 
         emit PropertyAdded(propertyId, _propAddress, _parentHash);
     }
 
-    function pause() public override {
-        require(hasRole(TREASURY_ROLE, msg.sender), 'Quest: only TREASURY_ROLE');
-        _pause();
-    }
-
-    function unpause() public override {
-        require(hasRole(TREASURY_ROLE, msg.sender), 'Quest: only TREASURY_ROLE');
-        _unpause();
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC1155Upgradeable, AccessControlUpgradeable, ERC1155ReceiverUpgradeable)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
     }
 
     function getPropertyId() public view returns(uint256)  {
@@ -89,50 +109,62 @@ contract QuestProperties is Initializable, ERC1155PresetMinterPauserUpgradeable,
         return "1.0.0";
     }
 
-    function mintNFT (uint256 id, bytes memory data) external virtual payable onlyRole(TREASURY_ROLE) {
+    function upgradeTo(address newImplementation) external virtual override {
+        require(AddressUpgradeable.isContract(newImplementation), 'Quest: new Implementation must be a contract');
+    }
+
+
+    function mintNFT (uint256 id, bytes memory data, uint256 price) external virtual payable onlyRole(TREASURY_ROLE) returns(uint256, uint256) {
         require(!exists(id), "Quest: token already minted");
+        if (price == 0) {
+            id == 0;
+        } else {
+            price >= 1 ether; //usdc
+        }
         _mint(address(this), id, 1, data);
-
+        properties[propertyId].tokens.push(Token(id,price));
+        
+        return (id,price);
     }
 
-    function mintBatchNFTs (uint256[] memory ids, uint256[] memory amounts, bytes memory data) external virtual payable onlyRole(TREASURY_ROLE){
+    function mintBatchNFTs (uint256[] memory ids, uint256[] memory amounts, bytes memory data, uint256[] memory prices) external virtual payable onlyRole(TREASURY_ROLE) returns(uint256[] memory, uint256[] memory) {
+        require(ids.length == prices.length, 'Quest: ids and prices length mismatch');
         _mintBatch(address(this), ids, amounts, data);
+        uint j = 0;
+        uint len = ids.length;
+        for (j = 0; j <= len; j++) { //for loop example
+        properties[ids[j]].tokens.push(Token(ids[j],prices[j]));
+        }
+
+        return(ids[],prices[]);
+        
     }
+        
+
 
     function burnNFT(address from, uint256 id, uint256 amount) external virtual onlyRole(TREASURY_ROLE){
         require(exists(id), 'Quest: NFT does not exist');
+        require(from == _msgSender() || isApprovedForAll(from, _msgSender()), "Quest: caller is not owner nor approved");
         _burn(from, id, amount);
     }
 
-    function burnBatchNFTs(address from, uint256[] memory ids, uint256[] memory amounts) external virtual onlyRole(TREASURY_ROLE){
+    function burnBatchNFTs(address from, uint256[] memory ids, uint256[] memory amounts) external virtual onlyRole(TREASURY_ROLE) {
+        require(from == _msgSender() || isApprovedForAll(from, _msgSender()), "Quest: caller is not owner nor approved");
         _burnBatch(from, ids, amounts);
     }
     
     function transferNFT(address to, uint256 id, uint256 amount, bytes memory data) external payable onlyRole(DEFAULT_ADMIN_ROLE) {
         require(balanceOf(address(this), id) >= amount);
+        require(to != address(0), "Quest: transfer to zero address");
         safeTransferFrom(address(this), to, id, amount, data);
     }
 
 
-    function setURI(string memory newuri) external {
+    function setURI(string memory newuri) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _setURI(newuri);
     }
 
-
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC1155PresetMinterPauserUpgradeable, ERC1155ReceiverUpgradeable)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
-    }
-
-    function _authorizeUpgrade(address newImplementation)
-        internal
-        onlyRole(UPGRADER_ROLE)
-        override
-    {}
+    function _authorizeUpgrade(address newImplementation) internal virtual  override onlyRole(UPGRADER_ROLE) {}
 
 
     function _beforeTokenTransfer(
@@ -157,7 +189,7 @@ contract QuestProperties is Initializable, ERC1155PresetMinterPauserUpgradeable,
             }
         }
     }
-    uint256[50] private __gap;
+
 
 
 }
