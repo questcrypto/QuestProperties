@@ -49,9 +49,9 @@ contract QuestProperties is Initializable, ERC1155Upgradeable, ERC1155HolderUpgr
     uint256 public constant RENT_RIGHT = 4;
     uint256 public constant MGMT_RIGHT = 5;
 
-    uint256 public noOfRights
+    uint256 public noOfRights;
 
-    function initialize(address treasury, address upgrader, string memory uri, uint256 memory _noOfRights) external virtual initializer {
+    function initialize(address treasury, address upgrader, string memory uri, uint256  _noOfRights) external virtual initializer {
         __ERC1155_init(uri);
         __AccessControl_init();
         __ERC1155Receiver_init();
