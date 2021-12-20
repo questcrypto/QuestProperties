@@ -49,9 +49,9 @@ contract QuestProperties is Initializable, ERC1155Upgradeable, ERC1155HolderUpgr
     uint256 public constant RENT_RIGHT = 4;
     uint256 public constant MGMT_RIGHT = 5;
 
-    uint256[] availableTokens;
+    uint256 public noOfRights
 
-    function initialize(address treasury, address upgrader, string memory uri) external virtual initializer {
+    function initialize(address treasury, address upgrader, string memory uri, uint256 memory _noOfRights) external virtual initializer {
         __ERC1155_init(uri);
         __AccessControl_init();
         __ERC1155Receiver_init();
@@ -61,6 +61,8 @@ contract QuestProperties is Initializable, ERC1155Upgradeable, ERC1155HolderUpgr
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(TREASURY_ROLE, treasury);
         _setupRole(UPGRADER_ROLE, upgrader);
+
+        noOfRights = _noOfRights;
     }
 
     function approvedProperty(
@@ -116,11 +118,11 @@ contract QuestProperties is Initializable, ERC1155Upgradeable, ERC1155HolderUpgr
 
     function mintNFT (uint256 id, bytes memory data, uint256 price) external virtual payable onlyRole(TREASURY_ROLE) returns(uint256, uint256) {
         require(!exists(id), "Quest: token already minted");
+        require(id <= noOfRights, "Quest: invalid token id");
+        //We just need to check if the price of the token is greater than 0, the else statement is not required, please comment your thoughts on this
         if (price == 0) {
-            id == 0;
-        } else {
-            price >= 1 ether; //usdc
-        }
+            id = 0;
+        } 
         _mint(address(this), id, 1, data);
         properties[propertyId].tokens.push(Token(id,price));
         
