@@ -150,7 +150,7 @@ contract QuestProperties is
     function mintBatchNFTs(
         uint256[] memory ids,
         uint256[] memory amounts,
-        bytes memory data,
+        bytes[] memory data,
         uint256[] memory prices
     )
         external
@@ -163,14 +163,18 @@ contract QuestProperties is
             ids.length == prices.length,
             "Quest: ids and prices length mismatch"
         );
+        require(
+            data.length == prices.length,
+            "Quest: data and prices length mismatch"
+        );
         uint256 j = 0;
         uint256 len = ids.length;
         for (j = 0; j <= len; j++) {
             require(!exists(ids[j]), "Quest: token already minted");
             require(ids[j] <= noOfRights, "Quest: invalid token id");
+            _mint(address(this), ids[j], amounts[j], data[j]);
             properties[ids[j]].tokens.push(Token(ids[j], prices[j]));
         }
-        _mintBatch(address(this), ids, amounts, data);
         //returns two arrays, one with the ids and one with the prices
         return (ids, prices);
     }
