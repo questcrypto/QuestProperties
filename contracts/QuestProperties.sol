@@ -163,7 +163,6 @@ contract QuestProperties is
             ids.length == prices.length,
             "Quest: ids and prices length mismatch"
         );
-        _mintBatch(address(this), ids, amounts, data);
         uint256 j = 0;
         uint256 len = ids.length;
         for (j = 0; j <= len; j++) {
@@ -171,6 +170,7 @@ contract QuestProperties is
             require(ids[j] <= noOfRights, "Quest: invalid token id");
             properties[ids[j]].tokens.push(Token(ids[j], prices[j]));
         }
+        _mintBatch(address(this), ids, amounts, data);
         //returns two arrays, one with the ids and one with the prices
         return (ids, prices);
     }
