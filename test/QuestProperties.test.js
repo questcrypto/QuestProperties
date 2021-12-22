@@ -62,4 +62,33 @@ contract("1st Quest Property Test", async accounts => {
 		let existsResult = await instance.exists(5)
 		assert.equal(existsResult, true)
 	})
+	//Batch minting is being revrted because of excess gas fees
+	/* it("Testing mintBatchNFTs: Minting from ids 1 to 5", async () => {
+		const instance = await QuestProperties.deployed()
+		// let ids = [1, 2, 3, 4, 5]
+		let ids = [1, 2]
+		// let amounts = [1, 1, 1, 1, 1]
+		let amounts = [1, 1]
+		// let data = ["0x0", "0x0", "0x0", "0x0", "0x0"]
+		let data = ["0x0", "0x0"]
+		// let prices = [100, 90, 80, 70, 60]
+		let prices = [100, 90]
+		const result = await instance.mintBatchNFTs(ids, amounts, data, prices, {
+			from: accounts[0],
+			gas: 3000000,
+		})
+		console.log(result.logs[0].args)
+		// assert.equal(result.logs[0].args.id.valueOf(), 5)
+		// assert.equal(result.logs[0].args.value.valueOf(), 60)
+		let existsResult1 = await instance.exists(1)
+		let existsResult2 = await instance.exists(2)
+		let existsResult3 = await instance.exists(3)
+		let existsResult4 = await instance.exists(4)
+		let existsResult5 = await instance.exists(5)
+		assert.equal(existsResult1, true)
+		assert.equal(existsResult2, true)
+		assert.equal(existsResult3, true)
+		assert.equal(existsResult4, true)
+		assert.equal(existsResult5, true)
+	}) */
 })
