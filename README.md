@@ -1,2 +1,27 @@
 # QuestProperties
-Final property multi-token creation 
+In live Production, truffle-config shouldn't have keys hard coded in the file.
+`updateTo` function in both contracts have to be examined thoroughly: Myslef
+`abi.encodeWithSignature` in factory contract needs help with.
+
+contract Interfaces, which are three in ERC1155 have to prioritize by FE team
+
+
+## Notes about the contract to facilitate dealing with:
+
+* ERC1155 will be deployed first, address will be used in Factory
+* Factory Contract: ERC1155 address is immutable and whoever call the initialized function will be the contract owner (HOA)
+* each time a new proxy is created, the address of the proxy will stored in an array of proxies and an event will be emitted with proxy address
+* In ERC1155, HOA is the owner & Default Admin Role which is responsible to:
+    
+    1- `approvedProperty`
+
+    2- `burnNFT` & `burnBatchNFTs`
+
+    3- `transferNFT`
+
+    4- `Pausing` Factory contract in case of bugs or Emergency
+
+* TREASURY_ROLE : responsible for `mintNFT ` & `mintBatchNFTs`
+
+* UPGRADER_ROLE : responsible for `upgradeTo` to the new version
+
