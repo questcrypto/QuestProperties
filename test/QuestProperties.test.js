@@ -9,12 +9,19 @@ contract("1st Quest Property Test", async accounts => {
 	const treasury = accounts[0]
 	const upgrader = accounts[0]
 	const baseURI = "https://quest-test.herokuapp.com/"
-	const _noOfRights = 5
+	const contractName = "Quest Properties Tests"
+	const description = "Testing the contract"
 	beforeEach(async () => {
 		//Deploy the contract
 		this.contract = await QuestProperties.new()
 		//Initialising by calling the initialize function
-		await this.contract.initialize(treasury, upgrader, baseURI, _noOfRights)
+		await this.contract.initialize(
+			treasury,
+			upgrader,
+			baseURI,
+			contractName,
+			description
+		)
 	})
 	//----->For mintNFT<-----//
 	it("Testing mint NFT: Price 0 then we mint TITLE", async () => {

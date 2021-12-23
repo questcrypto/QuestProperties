@@ -10,12 +10,13 @@ contract("Quest Properties (proxy)", function (accounts) {
 	const treasury = accounts[0]
 	const upgrader = accounts[0]
 	const baseURI = "https://quest-test.herokuapp.com/"
-	const _noOfRights = 5
+	const contractName = "Quest Properties Tests"
+	const description = "Testing the contract"
 	beforeEach(async function () {
 		// Deploy a new property contract for each test
 		this.questproperties = await deployProxy(
 			QuestProperties,
-			[treasury, upgrader, baseURI, _noOfRights],
+			[treasury, upgrader, baseURI, contractName, description],
 			{ initializer: "initialize" }
 		)
 	})
