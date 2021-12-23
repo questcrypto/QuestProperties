@@ -16,7 +16,7 @@ contract("1st Quest Property Test", async accounts => {
 		//Initialising by calling the initialize function
 		await this.contract.initialize(treasury, upgrader, baseURI, _noOfRights)
 	})
-
+	//----->For mintNFT<-----//
 	it("Testing mint NFT: Price 0 then we mint TITLE", async () => {
 		const result = await this.contract.mintNFT(0, "0x0", 0, {
 			from: accounts[0],
@@ -71,7 +71,7 @@ contract("1st Quest Property Test", async accounts => {
 		assert.equal(existsResult, true)
 	})
 
-	//---------//
+	//----->For batch mint<----//
 	it("Testing mintBatchNFTs: Minting from ids 1 to 5", async () => {
 		// let ids = [1, 2, 3, 4, 5]
 		let ids = [1, 2]
@@ -104,5 +104,19 @@ contract("1st Quest Property Test", async accounts => {
 		assert.equal(existsResult3, true)
 		assert.equal(existsResult4, true)
 		assert.equal(existsResult5, true)
+	})
+	//----->For burnNFT<----//
+	it("Testing burn NFT: Burning the right with ID:5", async () => {
+		await this.contract.mintNFT(5, "0x0", 60, {
+			from: accounts[0],
+		})
+		let existsResult1 = await this.contract.exists(5)
+		console.log(existsResult1)
+		assert.equal(existsResult1, true)
+		if (existsResult1) {
+			await this.contract.burnNFT(accounts[0], 5, 1, {
+				from: accounts[0],
+			})
+		}
 	})
 })
