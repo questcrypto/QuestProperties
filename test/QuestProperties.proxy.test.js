@@ -17,7 +17,8 @@ contract("Quest Properties (proxy)", function (accounts) {
 		this.questproperties = await deployProxy(
 			QuestProperties,
 			[treasury, upgrader, baseURI, contractName, description],
-			{ initializer: "initialize" }
+			{ initializer: "initialize" },
+			{ kind: "uups" }
 		)
 	})
 

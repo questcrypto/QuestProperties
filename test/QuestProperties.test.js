@@ -1,5 +1,5 @@
 //Load dependencies
-const { expect } = require("chai")
+const { expect, assert } = require("chai")
 
 //Load compiled artiacts
 const QuestProperties = artifacts.require("QuestProperties")
@@ -98,7 +98,6 @@ contract("1st Quest Property Test", async accounts => {
 				gas: 3000000,
 			}
 		)
-		console.log(result.logs[0].args)
 		// assert.equal(result.logs[0].args.id.valueOf(), 5)
 		// assert.equal(result.logs[0].args.value.valueOf(), 60)
 		let existsResult1 = await this.contract.exists(1)
@@ -118,12 +117,46 @@ contract("1st Quest Property Test", async accounts => {
 			from: accounts[0],
 		})
 		let existsResult1 = await this.contract.exists(5)
-		console.log(existsResult1)
 		assert.equal(existsResult1, true)
 		if (existsResult1) {
 			await this.contract.burnNFT(accounts[0], 5, 1, {
 				from: accounts[0],
 			})
 		}
+	})
+	//----->For burnBatchNFTs<----//
+	it("Testing burn NFT: Burning the right with ID:5 & ID:4", async () => {
+		await this.contract.mintNFT(5, "0x0", 60, {
+			from: accounts[0],
+		})
+		await this.contract.mintNFT(4, "0x0", 70, {
+			from: accounts[0],
+		})
+		let existsResult1 = await this.contract.exists(5)
+		let existsResult2 = await this.contract.exists(4)
+		console.log(existsResult1, existsResult2, "<---Check the existance--->")
+		assert.equal(existsResult1, true)
+		assert.equal(existsResult2, true)
+		let ids = [5, 4]
+		let amounts = [1, 1]
+		if (existsResult1 && existsResult2) {
+			await this.contract.burnBatchNFTs(accounts[0], ids, amounts, {
+				from: accounts[0],
+			})
+		}
+	})
+	//----->For approvedProperty<----//
+	it("Testing approvedProperty", async () => {
+		await this.contract.mintNFT(5, "0x0", 60, {
+			from: accounts[0],
+		})
+		await this.contract.approvedProperty("0x0", accounts[1], 5, {
+			from: accounts[0],
+		})
+		const response = await this.contract.properties.call(5)
+		console.log(response, "<---Check the approved properties--->")
+		assert.equal(response.parentHash, "0x00")
+		console.log(accounts[1], accounts[2], "Addresses")
+		assert.equal(response.propAddress, accounts[1])
 	})
 })

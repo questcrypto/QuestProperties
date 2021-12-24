@@ -40,7 +40,7 @@ contract QuestProperties is Initializable, ERC1155Upgradeable, ERC1155HolderUpgr
 
 
     
-    mapping(uint256 => Property) private properties;
+    mapping(uint256 => Property) public properties;
     mapping(uint256 => uint256) private _totalSupply;
     mapping(string=>bool) private propertyExists;
 
@@ -82,9 +82,9 @@ contract QuestProperties is Initializable, ERC1155Upgradeable, ERC1155HolderUpgr
         propertyExists[uri] = true;
     }
 
-    function approvedProperty(bytes memory _parentHash, address _propAddress) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
-        properties[propertyId].parentHash = _parentHash;
-        properties[propertyId].propAddress = _propAddress;
+    function approvedProperty(bytes memory _parentHash, address _propAddress, uint256 _propertyId) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+        properties[_propertyId].parentHash = _parentHash;
+        properties[_propertyId].propAddress = _propAddress;
 
         emit PropertyAdded(propertyId, _propAddress, _parentHash);   
     }
