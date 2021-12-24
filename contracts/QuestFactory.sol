@@ -27,11 +27,11 @@ contract QuestFactory is Initializable, OwnableUpgradeable, PausableUpgradeable,
     logicAddress = address(new QuestProperties());
   }
 
-  function deployPropertyContract(address treasury, address upgrader, string memory uri, string memory _contractName, string memory _description) public virtual whenNotPaused returns(address) {
-    ERC1967Proxy proxy= new ERC1967Proxy(
-      logicAddress,
-      abi.encodeWithSignature(QuestProperties(address).initialize.selector, treasury, upgrader, uri, _contractName, _description)
-    );
+  // function deployPropertyContract(address treasury, address upgrader, string memory uri, string memory _contractName, string memory _description) public virtual whenNotPaused returns(address) {
+  //   ERC1967Proxy proxy= new ERC1967Proxy(
+  //     logicAddress,
+  //     abi.encodeWithSelector(QuestProperties(address(0)).initialize.selector, treasury, upgrader, uri, _contractName, _description)
+  //   );
 
     emit  contractDeployed(address(proxy));
 
@@ -49,16 +49,9 @@ contract QuestFactory is Initializable, OwnableUpgradeable, PausableUpgradeable,
   }
 
 
-  //@sasha: needs attention!
-  function upgradeTo(address newFactory) external virtual override {
-    _authorizeUpgrade(newFactory);
-    _upgradeToAndCallSecure(newFactory, new bytes(0), false);
-    require (AddressUpgradeable.isContract(newFactory), 'Quest: new factory must be a contract');
-  }
-  
-
-  function _authorizeUpgrade(address newFactory) internal virtual  override onlyOwner {
-    
+  function _authorizeUpgrade(address newImplementation) internal virtual  override onlyOwner {
+    require (AddressUpgradeable.isContract(newImplementation), 'Quest: new factory must be a contract');
+    address QuestFactoryV2 = newImplementation;
   }
 
 }
