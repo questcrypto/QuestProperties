@@ -8,9 +8,18 @@
 
 #### @Arhan & @Chethan:
 - Review Code in ERC1155, with special attention to `burnNFT` , `burnBatchNFTs`, & `transferNFT`.
+- if you are gonna into errors, please check modifiers & requirements and let me know
+- I would be thrilled if you can enhance my code &/or calling functions
 
-- I would be thrilled if you can enhance by code &/or calling functions
+####  @Front End:
 - contract Interfaces, which are three in ERC1155 have to be prioritized by FE team
+
+#### @Chethan:
+- responsible for USDC pricing as it's already listed as mapped asset on Polygon Blockchain.
+
+#### @Arhan:
+- Writing full test for ERC1155 using upgradeables-plugin
+
 
 </P> 
 
@@ -38,5 +47,6 @@
 ### Myself:
 - ERC1155 is finished & polished unless running into errors by @Arhan
 - Factory contract: WIP
+- I want to write migration script, has to be reviewed by @Chathen & myself because of JS.
 
 
