@@ -13,7 +13,7 @@ import '@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol';
 contract QuestFactory is Initializable, OwnableUpgradeable, PausableUpgradeable, UUPSUpgradeable {
   
 
-  address immutable logicAddress;
+  address  logicAddress; //Removed Immutable as immutable variable cannot be initialized
   address[] public proxies;
 
   event contractDeployed(address indexed propContractAddr);
