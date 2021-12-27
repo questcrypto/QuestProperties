@@ -1,73 +1,57 @@
 // SPDX-License-Identifier: MIT
-// pragma solidity ^0.8.10;
-// // import "./QuestProperties.sol";
-// import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-// import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-// import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-// import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
-// import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
-// import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-// import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol"; //make sure if init is needed
+pragma solidity ^0.8.0;
 
-// contract QuestFactory is
-//     Initializable,
-//     OwnableUpgradeable,
-//     PausableUpgradeable,
-//     UUPSUpgradeable
-// {
-//     address immutable logicAddress;
+import "./QuestProperties.sol";
+import '@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol';
+import '@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol';
+import '@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol'; 
 
-//     event TokenDeployed(address tokenAddress);
 
-//     function initialize() public virtual initializer whenNotPaused {
-//         __UUPSUpgradeable_init();
-//         __Pausable_init();
-//         __Ownable_init(); //HOA = msg.sender
+contract QuestFactory is Initializable, OwnableUpgradeable, PausableUpgradeable, UUPSUpgradeable {
+  
 
-//         logicAddress = address(new QuestProperties());
-//     }
+  address immutable logicAddress;
+  address[] public proxies;
 
-//     function listProperty(
-//         address treasury,
-//         address upgrader,
-//         string calldata uri
-//     ) public virtual whenNotPaused returns (address) {
-//         ERC1967Proxy proxy = new ERC1967Proxy(
-//             logicAddress,
-//             abi.encodeWithSignature(
-//                 QuestProperties(address(0)).initialize.selector,
-//                 treasury,
-//                 upgrader,
-//                 uri
-//             )
-//         );
+  event contractDeployed(address indexed propContractAddr);
 
-//         emit TokenDeployed(address(proxy));
+  function initialize() public virtual initializer whenNotPaused {
+    __UUPSUpgradeable_init();
+    __Pausable_init();
+    __Ownable_init(); //HOA = msg.sender
+    
 
-//         return address(proxy);
-//     }
+    logicAddress = address(new QuestProperties());
+  }
 
-//     function pause() external onlyOwner {
-//         _pause();
-//     }
+  // function deployPropertyContract(address treasury, address upgrader, string memory uri, string memory _contractName, string memory _description) public virtual whenNotPaused returns(address) {
+  //   ERC1967Proxy proxy= new ERC1967Proxy(
+  //     logicAddress,
+  //     abi.encodeWithSelector(QuestProperties(address(0)).initialize.selector, treasury, upgrader, uri, _contractName, _description)
+  //   );
 
-//     function unpause() external onlyOwner {
-//         _unpause();
-//     }
+    emit  contractDeployed(address(proxy));
 
-//     function upgradeTo(address newFactory) external virtual override {
-//         _authorizeUpgrade(newFactory);
-//         _upgradeToAndCallSecure(newFactory, new bytes(0), false);
-//         require(
-//             AddressUpgradeable.isContract(newFactory),
-//             "Quest: new Implementation must be a contract"
-//         );
-//     }
+    proxies.push(address(proxy));
 
-//     function _authorizeUpgrade(address newFactory)
-//         internal
-//         virtual
-//         override
-//         onlyOwner
-//     {}
-// }
+    return address(proxy);
+  }
+
+  function pause() external onlyOwner {
+    _pause();
+  }
+
+  function unpause() external onlyOwner {
+    _unpause();
+  }
+
+
+  function _authorizeUpgrade(address newImplementation) internal virtual  override onlyOwner {
+    require (AddressUpgradeable.isContract(newImplementation), 'Quest: new factory must be a contract');
+    address QuestFactoryV2 = newImplementation;
+  }
+
+}

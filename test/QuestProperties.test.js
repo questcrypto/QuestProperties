@@ -147,13 +147,14 @@ contract("1st Quest Property Test", async accounts => {
 	})
 	//----->For approvedProperty<----//
 	it("Testing approvedProperty", async () => {
-		await this.contract.mintNFT(5, "0x0", 60, {
+		let currentPorpertyId = 0
+		await this.contract.approvedProperty("0x0", accounts[1], {
 			from: accounts[0],
 		})
-		await this.contract.approvedProperty("0x0", accounts[1], 5, {
-			from: accounts[0],
+		await this.contract.propertyId.call(function (err, res) {
+			currentPorpertyId = res
 		})
-		const response = await this.contract.properties.call(5)
+		const response = await this.contract.properties.call(currentPorpertyId)
 		console.log(response, "<---Check the approved properties--->")
 		assert.equal(response.parentHash, "0x00")
 		console.log(accounts[1], accounts[2], "Addresses")
