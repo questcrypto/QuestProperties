@@ -86,3 +86,4 @@ contract QuestFactory is Initializable, OwnableUpgradeable, PausableUpgradeable,
   }
 
 }
+
