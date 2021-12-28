@@ -97,7 +97,9 @@ contract QuestProperties is
         string memory uri,
         string memory _contractName,
         string memory _description
-    ) external virtual initializer {
+        ) external 
+        virtual 
+        initializer {
         __ERC1155_init(uri);
         __AccessControl_init();
         __ERC1155Receiver_init();
@@ -261,8 +263,8 @@ contract QuestProperties is
      *
      *Requirements: 
      * - Only DEFAULT_ADMIN_ROLE which is msg.sender
-     * - caller is the owner of approved operator
-     * - token id exists, have been minted 
+     * - caller is the owner or approved operator
+     * - token id exists, have been minted before
      */
     function burnNFT(address from, uint256 id, uint256 amount) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
         require(exists(id), "Quest: NFT does not exist");
@@ -274,8 +276,8 @@ contract QuestProperties is
     }
 
     /**
-    *@dev Burn Btach of token `ids` from `from` of amounts `amounts`
-    *
+     *@dev Burn Btach of token `ids` from `from` of amounts `amounts`
+     *
      * Requirements: 
      * - Only DEFAULT_ADMIN_ROLE which is msg.sender
      * - caller is the owner of approved operator

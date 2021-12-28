@@ -45,8 +45,6 @@
 <P>
 
 ### Myself:
-- ERC1155 is finished & polished unless running into errors by @Arhan
-- Factory contract: WIP
-- I want to write migration script, has to be reviewed by @Chathen & myself because of JS.
+- My work is done unless we run into bugs.
 
 
