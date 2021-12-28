@@ -70,6 +70,10 @@ contract QuestFactory is Initializable, OwnableUpgradeable, PausableUpgradeable,
     return address(proxy);
   }
 
+  function getProxyLength() public view returns (uint256){
+    return proxies.length;
+  }
+
 
   function pause() external onlyOwner {
     _pause();

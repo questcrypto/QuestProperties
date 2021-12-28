@@ -42,7 +42,7 @@ module.exports = {
 			settings: {
 				optimizer: {
 					enabled: true,
-					runs: 1500,
+					runs: 200,
 				},
 			},
 		},
@@ -51,7 +51,6 @@ module.exports = {
 	api_keys: {
 		polygon: "",
 	},
-
 	db: {
 		enabled: false,
 	},
