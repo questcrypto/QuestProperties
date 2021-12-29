@@ -10,6 +10,7 @@ const QuestProperties = artifacts.require("QuestProperties")
 contract("Quest Factory (test)", function (accounts) {
 	const treasury = accounts[0]
 	const upgrader = accounts[0]
+	const admin = accounts[0]
 	const baseURI = "https://quest-test.herokuapp.com/"
 	const contractName = "Quest Properties Tests"
 	const description = "Testing the contract"
@@ -27,6 +28,7 @@ contract("Quest Factory (test)", function (accounts) {
 		await this.questFactory.deployPropertyContract(
 			treasury,
 			upgrader,
+			admin,
 			baseURI,
 			contractName,
 			description,
@@ -55,6 +57,9 @@ contract("Quest Factory (test)", function (accounts) {
 			gasPrice: 100000000000,
 		})
 		let propertiesDetails = await questPropertyInstance.properties.call(1)
+		console.log(propertiesDetails, "<---propertiesDetails--->")
+		assert.equal(propertiesDetails.propAddress, accounts[1])
+		assert.equal(propertiesDetails.parentHash, "0x00")
 	})
 
 	//----->For mintNFT<-----//

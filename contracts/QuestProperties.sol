@@ -94,6 +94,7 @@ contract QuestProperties is
     function initialize(
         address treasury,
         address upgrader,
+        address admin,
         string memory uri,
         string memory _contractName,
         string memory _description
@@ -106,7 +107,7 @@ contract QuestProperties is
         __ERC1155Holder_init();
         __UUPSUpgradeable_init();
 
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(DEFAULT_ADMIN_ROLE, admin);
         _setupRole(TREASURY_ROLE, treasury);
         _setupRole(UPGRADER_ROLE, upgrader);
 

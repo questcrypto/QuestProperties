@@ -45,7 +45,8 @@ contract QuestFactory is Initializable, OwnableUpgradeable, PausableUpgradeable,
    */
   function deployPropertyContract(
     address treasury, 
-    address upgrader, 
+    address upgrader,
+    address admin, 
     string memory uri, 
     string memory _contractName, 
     string memory _description
