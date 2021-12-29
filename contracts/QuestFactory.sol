@@ -33,6 +33,7 @@ contract QuestFactory is Initializable, OwnableUpgradeable, PausableUpgradeable,
     __UUPSUpgradeable_init();
     __Pausable_init();
     __Ownable_init(); 
+    _transferOwnership(msg.sender);
     
 
     logicAddress = address(new QuestProperties());
@@ -55,7 +56,7 @@ contract QuestFactory is Initializable, OwnableUpgradeable, PausableUpgradeable,
     returns(address) {
     ERC1967Proxy proxy= new ERC1967Proxy(
       logicAddress,
-      abi.encodeWithSelector(QuestProperties(address(0)).initialize.selector, 
+      abi.encodeWithSelector(QuestProperties(address(logicAddress)).initialize.selector, 
       treasury, 
       upgrader, 
       uri, 
