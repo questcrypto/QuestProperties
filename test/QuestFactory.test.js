@@ -134,7 +134,7 @@ contract("Quest Factory (test)", function (accounts) {
 			prices,
 			{
 				from: accounts[0],
-				gas: 3000000,
+				gas: 3000000, //gas limit
 			}
 		)
 		// assert.equal(result.logs[0].args.id.valueOf(), 5)
