@@ -1,6 +1,6 @@
 /*------>Testing the Proxy<------*/
 // Load dependencies
-const { expect } = require("chai")
+const { expect, assert } = require("chai")
 const { deployProxy } = require("@openzeppelin/truffle-upgrades")
 
 // Load compiled artifacts
@@ -177,5 +177,19 @@ contract("Quest Factory (test)", function (accounts) {
 				from: accounts[0],
 			})
 		}
+	})
+	it("Test getPropertyId() and totalSupply", async() => {
+		await questPropertyInstance.mintNFT(5, "0x0", 60, {
+			from: accounts[0],
+		})
+		await questPropertyInstance.mintNFT(4, "0x0", 70, {
+			from: accounts[0],
+		})
+		const propertyIdOfProp = await questPropertyInstance.getPropertyId();
+		assert.equal(propertyIdOfProp, 1);
+		const supplyOfRightId4 = await questPropertyInstance.totalSupply(4)
+		assert.equal(supplyOfRightId4, 1);
+		const supplyOfRightId5 = await questPropertyInstance.totalSupply(5);
+		assert.equal(supplyOfRightId5, 1);
 	})
 })

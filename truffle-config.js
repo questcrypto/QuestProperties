@@ -9,7 +9,7 @@ module.exports = {
 			host: "127.0.0.1",
 			port: 8545,
 			network_id: "*",
-			from: "0xD8cDef21BB85fD11d41c42C756E6E2E349463a1D",
+			from: "0x1a8f0B73f7224D1301791928edE42Ed2996192B0",
 		},
 		polygon: {
 			provider: () =>
