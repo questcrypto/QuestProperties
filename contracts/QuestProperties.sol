@@ -35,15 +35,16 @@ contract QuestProperties is
 {
     using CountersUpgradeable for CountersUpgradeable.Counter;
     CountersUpgradeable.Counter propertyIds;
-    CountersUpgradeable.Counter verisons;
+    
 
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
     bytes32 public constant TREASURY_ROLE = keccak256("TREASURY_ROLE");
+    bytes32 public constant CONTRACT_ADMIN_ROLE = keccak256("CONTRACT_ADMIN_ROLE");
 
     string public contractName;
     string public description;
     uint256 private propertyId;
-    uint256 private currentVersion;
+    
 
     //Token data structure
     struct Token {
@@ -75,12 +76,13 @@ contract QuestProperties is
 
     //List of available tokens ids & their crossponding names
     uint256 public constant TITLE = 0;
-    uint256 public constant GOVERNANCE_RIGHT = 1;
-    uint256 public constant EQUITY_RIGHT = 2;
-    uint256 public constant POSSESSION_RIGHT = 3;
-    uint256 public constant RENT_RIGHT = 4;
-    uint256 public constant MGMT_RIGHT = 5;
-
+    uint256 public constant MANAGEMENT_RIGHT = 1;
+    uint256 public constant INCOME_RIGHT = 2;
+    uint256 public constant EQUITY_RIGHT = 3;
+    uint256 public constant OCCUPANCY_RIGHT = 4;
+    uint256 public constant GOVERNANCE_RIGHT = 5;
+    
+    
     /**
      *@param treasury address, responsible for minting tokens
      *@param upgrader address, responsible for upgrading to next version
@@ -94,7 +96,10 @@ contract QuestProperties is
     function initialize(
         address treasury,
         address upgrader,
+        address hoa,
         string memory uri,
+        bytes memory _parentHash, 
+        address _propAddress,
         string memory _contractName,
         string memory _description
         ) external 
@@ -106,9 +111,11 @@ contract QuestProperties is
         __ERC1155Holder_init();
         __UUPSUpgradeable_init();
 
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(CONTRACT_ADMIN_ROLE, hoa);
         _setupRole(TREASURY_ROLE, treasury);
         _setupRole(UPGRADER_ROLE, upgrader);
+
+        propertyExists[uri] = true;
 
         contractName = _contractName;
         description = _description;
@@ -116,28 +123,14 @@ contract QuestProperties is
         propertyIds.increment();
         propertyId = propertyIds.current();
 
-        propertyExists[uri] = true;
-    }
 
-    /** 
-     *@param _parentHash bytes, ipfs generated hash for baseURI
-     *@param _propAddress address, physical property owner wallet address 
-     * 
-     *@dev Only accessable by HOA, who is responsible to gather & verify 
-     * property info from JavaScript.
-     *
-     * Emits an event each time a new property is added to the blockchain
-     */
-    function approvedProperty(bytes memory _parentHash, address _propAddress)
-        external
-        virtual
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
         properties[propertyId].parentHash = _parentHash;
         properties[propertyId].propAddress = _propAddress;
 
         emit PropertyAdded(propertyId, _propAddress, _parentHash);
+
     }
+
 
     //@Arhan: cooperate with FE to support Interfaces
     function supportsInterface(bytes4 interfaceId)
@@ -169,11 +162,12 @@ contract QuestProperties is
     }
 
     //Increment the version number in case of upgrading only
-    function version() public virtual returns (uint256) {
-        verisons.increment();
-        currentVersion = verisons.current();
+    function version() pure public virtual returns (string memory) {
+        return 'Startegic Quest Crypto V1';
+    }
 
-        return currentVersion;
+    function getAddress() view public returns(address){
+        return address(this);
     }
 
     /**
@@ -206,9 +200,7 @@ contract QuestProperties is
         //waiting for John's list of rights with zero value
         _mint(address(this), id, 1, data);
 
-        properties[propertyId].tokens.push(
-            Token({id: id, price: price, timeStamp: block.timestamp})
-        );
+        properties[propertyId].tokens.push(Token({id: id, price: price, timeStamp: block.timestamp}));
 
         return (id, price);
     }
@@ -266,7 +258,7 @@ contract QuestProperties is
      * - caller is the owner or approved operator
      * - token id exists, have been minted before
      */
-    function burnNFT(address from, uint256 id, uint256 amount) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+    function burnNFT(address from, uint256 id, uint256 amount) external virtual onlyRole(TREASURY_ROLE) {
         require(exists(id), "Quest: NFT does not exist");
         require(
             from == _msgSender() || isApprovedForAll(from, _msgSender()),
@@ -282,7 +274,7 @@ contract QuestProperties is
      * - Only DEFAULT_ADMIN_ROLE which is msg.sender
      * - caller is the owner of approved operator
      */
-    function burnBatchNFTs(address from, uint256[] memory ids, uint256[] memory amounts) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
+    function burnBatchNFTs(address from, uint256[] memory ids, uint256[] memory amounts) external virtual onlyRole(TREASURY_ROLE) {
         require(
             from == _msgSender() || isApprovedForAll(from, _msgSender()),
             "Quest: caller is not owner nor approved"
@@ -304,7 +296,7 @@ contract QuestProperties is
         uint256 id,
         uint256 amount,
         bytes memory data
-    ) external payable onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external payable onlyRole(CONTRACT_ADMIN_ROLE) {
         require(balanceOf(address(this), id) >= amount, 'Quest: balance is not enought');
         require(to != address(0), "Quest: transfer to zero address");
         safeTransferFrom(address(this), to, id, amount, data);
@@ -333,8 +325,7 @@ contract QuestProperties is
      * - only UPGRADER_ROLE
      * - new Implemetation is a contract
      */
-    function _authorizeUpgrade(address newImplementation) internal virtual override {
-        require(hasRole(UPGRADER_ROLE, msg.sender), "Quest: UPGRADER_ROLE only");
+    function _authorizeUpgrade(address newImplementation) internal virtual override onlyRole(UPGRADER_ROLE){
         require(
             AddressUpgradeable.isContract(newImplementation),
             "Quest: new Implementation must be a contract"
