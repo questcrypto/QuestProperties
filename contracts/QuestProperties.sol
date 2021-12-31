@@ -37,9 +37,10 @@ contract QuestProperties is
     CountersUpgradeable.Counter propertyIds;
     
 
+    bytes32 public constant CONTRACT_ADMIN_ROLE = keccak256("CONTRACT_ADMIN_ROLE");
     bytes32 public constant UPGRADER_ROLE = keccak256("UPGRADER_ROLE");
     bytes32 public constant TREASURY_ROLE = keccak256("TREASURY_ROLE");
-    bytes32 public constant CONTRACT_ADMIN_ROLE = keccak256("CONTRACT_ADMIN_ROLE");
+    
 
     string public contractName;
     string public description;
@@ -94,9 +95,9 @@ contract QuestProperties is
      * accounts with this role will be able to grant or revoke other roles & also it's own admin.
      */
     function initialize(
+        address hoa,
         address treasury,
         address upgrader,
-        address hoa,
         string memory uri,
         bytes memory _parentHash, 
         address _propAddress,
@@ -254,24 +255,24 @@ contract QuestProperties is
      *@dev Burn token `id` with amount `amount` from `from`
      *
      *Requirements: 
-     * - Only DEFAULT_ADMIN_ROLE which is msg.sender
+     * - Only TREASURY_ROLE 
      * - caller is the owner or approved operator
      * - token id exists, have been minted before
+     * - must have at least `amount` tokens of token type `id`
      */
-    function burnNFT(address from, uint256 id, uint256 amount) external virtual onlyRole(TREASURY_ROLE) {
+    function burnNFT(uint256 id, uint256 amount) external virtual onlyRole(TREASURY_ROLE) {
         require(exists(id), "Quest: NFT does not exist");
-        require(
-            from == _msgSender() || isApprovedForAll(from, _msgSender()),
-            "Quest: caller is not owner nor approved"
-        );
-        _burn(from, id, amount);
+        require(isApprovedForAll(address(this), msg.sender),"Quest: caller is not approved");
+
+        _burn(address(this), id, amount);
     }
+
 
     /**
      *@dev Burn Btach of token `ids` from `from` of amounts `amounts`
      *
      * Requirements: 
-     * - Only DEFAULT_ADMIN_ROLE which is msg.sender
+     * - Only TREASURY_ROLE
      * - caller is the owner of approved operator
      */
     function burnBatchNFTs(address from, uint256[] memory ids, uint256[] memory amounts) external virtual onlyRole(TREASURY_ROLE) {
@@ -283,13 +284,30 @@ contract QuestProperties is
     }
 
     /**
-     *@dev Transfers minted tokens and held by this contract to EOA or another contract
+     * @dev Grants or revokes permission to `operator` to transfer the caller's tokens, according to `approved`,
+     *
+     * Emits an {ApprovalForAll} event.
+     *
+     * Requirements:
+     *
+     * - `operator` cannot be the caller.
+     */
+    function setApprovalForAll(address operator, bool approved) public virtual override {
+        _setApprovalForAll(msg.sender, operator, approved);
+    }
+
+    /**
+     *@dev Transfers minted tokens that is held by this contract to EOA or another contract
+     *
+     *Emits a {TransferSingle} event.
      *
      *Requirements:
-     * - Only DEFAULT_ADMIN_ROLE
+     * - Only CONTRACT_ADMIN_ROLE
      * - This contract's balance of token id must be equal to or more than amount
      * - transfer to shouldn't be to zero address
-     * - caller must be owner or approved operator to `safeTransferFrom`
+     * - caller must be owner or approved operator to `_safeTransferFrom`
+     * -If `to` refers to a smart contract, it must implement {IERC1155Receiver-onERC1155Received} and return the
+     * acceptance magic value.
      */
     function transferNFT(
         address to,
@@ -299,7 +317,7 @@ contract QuestProperties is
     ) external payable onlyRole(CONTRACT_ADMIN_ROLE) {
         require(balanceOf(address(this), id) >= amount, 'Quest: balance is not enought');
         require(to != address(0), "Quest: transfer to zero address");
-        safeTransferFrom(address(this), to, id, amount, data);
+        _safeTransferFrom(address(this), to, id, amount, data);
     }
 
     /**
