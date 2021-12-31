@@ -190,6 +190,7 @@ contract QuestProperties is
      *@dev minted tokens are held by QuestProperties contract.
      */
     function mintNFT(
+        address treasury,
         uint256 id,
         bytes memory data,
         uint256 price
@@ -205,7 +206,7 @@ contract QuestProperties is
             "Quest: token already minted or out of range"
         );
         //waiting for John's list of rights with zero value
-        _mint(address(this), id, 1, data);
+        _mint(treasury, id, 1, data);
 
         properties[propertyId].tokens.push(
             Token({id: id, price: price, timeStamp: block.timestamp})
