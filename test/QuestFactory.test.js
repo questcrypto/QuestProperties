@@ -64,7 +64,7 @@ contract("Quest Factory (test)", function (accounts) {
 
 	//----->For mintNFT<-----//
 	it("Testing mint NFT: Price 0 then we mint TITLE", async () => {
-		const result = await questPropertyInstance.mintNFT(0, "0x0", 0, {
+		const result = await questPropertyInstance.mintNFT(accounts[0],0, "0x0", 0, {
 			from: accounts[0],
 		})
 		assert.equal(result.logs[0].args.id.valueOf(), 0)
@@ -72,7 +72,7 @@ contract("Quest Factory (test)", function (accounts) {
 		assert.equal(existsResult, true)
 	})
 	it("Testing mint NFT: Minting the right with ID:1", async () => {
-		const result = await questPropertyInstance.mintNFT(1, "0x0", 100, {
+		const result = await questPropertyInstance.mintNFT(accounts[0],1, "0x0", 100, {
 			from: accounts[0],
 		})
 		assert.equal(result.logs[0].args.id.valueOf(), 1)
@@ -81,7 +81,7 @@ contract("Quest Factory (test)", function (accounts) {
 		assert.equal(existsResult, true)
 	})
 	it("Testing mint NFT: Minting the right with ID:2", async () => {
-		const result = await questPropertyInstance.mintNFT(2, "0x0", 90, {
+		const result = await questPropertyInstance.mintNFT(accounts[0],2, "0x0", 90, {
 			from: accounts[0],
 		})
 		assert.equal(result.logs[0].args.id.valueOf(), 2)
@@ -90,7 +90,7 @@ contract("Quest Factory (test)", function (accounts) {
 		assert.equal(existsResult, true)
 	})
 	it("Testing mint NFT: Minting the right with ID:3", async () => {
-		const result = await questPropertyInstance.mintNFT(3, "0x0", 80, {
+		const result = await questPropertyInstance.mintNFT(accounts[0],3, "0x0", 80, {
 			from: accounts[0],
 		})
 		assert.equal(result.logs[0].args.id.valueOf(), 3)
@@ -99,7 +99,7 @@ contract("Quest Factory (test)", function (accounts) {
 		assert.equal(existsResult, true)
 	})
 	it("Testing mint NFT: Minting the right with ID:4", async () => {
-		const result = await questPropertyInstance.mintNFT(4, "0x0", 70, {
+		const result = await questPropertyInstance.mintNFT(accounts[0],4, "0x0", 70, {
 			from: accounts[0],
 		})
 		assert.equal(result.logs[0].args.id.valueOf(), 4)
@@ -108,7 +108,7 @@ contract("Quest Factory (test)", function (accounts) {
 		assert.equal(existsResult, true)
 	})
 	it("Testing mint NFT: Minting the right with ID:5", async () => {
-		const result = await questPropertyInstance.mintNFT(5, "0x0", 60, {
+		const result = await questPropertyInstance.mintNFT(accounts[0],5, "0x0", 60, {
 			from: accounts[0],
 		})
 		assert.equal(result.logs[0].args.id.valueOf(), 5)
@@ -152,7 +152,7 @@ contract("Quest Factory (test)", function (accounts) {
 	})
 	//----->For burnNFT<----//
 	it("Testing burn NFT: Burning the right with ID:5", async () => {
-		await questPropertyInstance.mintNFT(5, "0x0", 60, {
+		await questPropertyInstance.mintNFT(accounts[0],5, "0x0", 60, {
 			from: accounts[0],
 		})
 		let existsResult1 = await questPropertyInstance.exists(5)
@@ -165,10 +165,10 @@ contract("Quest Factory (test)", function (accounts) {
 	})
 	//----->For burnBatchNFTs<----//
 	it("Testing burn NFT: Burning the right with ID:5 & ID:4", async () => {
-		await questPropertyInstance.mintNFT(5, "0x0", 60, {
+		await questPropertyInstance.mintNFT(accounts[0], 5, "0x0", 60, {
 			from: accounts[0],
 		})
-		await questPropertyInstance.mintNFT(4, "0x0", 70, {
+		await questPropertyInstance.mintNFT(accounts[0], 4, "0x0", 70, {
 			from: accounts[0],
 		})
 		let existsResult1 = await questPropertyInstance.exists(5)
@@ -184,10 +184,10 @@ contract("Quest Factory (test)", function (accounts) {
 		}
 	})
 	it("Test getPropertyId() and totalSupply", async() => {
-		await questPropertyInstance.mintNFT(5, "0x0", 60, {
+		await questPropertyInstance.mintNFT(accounts[0], 5, "0x0", 60, {
 			from: accounts[0],
 		})
-		await questPropertyInstance.mintNFT(4, "0x0", 70, {
+		await questPropertyInstance.mintNFT(accounts[0], 4, "0x0", 70, {
 			from: accounts[0],
 		})
 		const propertyIdOfProp = await questPropertyInstance.getPropertyId();
