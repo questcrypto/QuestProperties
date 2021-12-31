@@ -50,7 +50,7 @@ contract("Quest Factory (test)", function (accounts) {
 	})
 
 	// Test case
-	it("retrieve returns a value that was initialized", async function () {
+	it("Approve property test", async function () {
 		await questPropertyInstance.approvedProperty("0x0", accounts[1], {
 			from: accounts[0],
 			gas: 4712388,
@@ -134,7 +134,8 @@ contract("Quest Factory (test)", function (accounts) {
 			prices,
 			{
 				from: accounts[0],
-				gas: 3000000, //gas limit
+				gas: 5012388,
+				gasPrice: 100000000000,
 			}
 		)
 		// assert.equal(result.logs[0].args.id.valueOf(), 5)
@@ -210,7 +211,7 @@ contract("Quest Factory (test)", function (accounts) {
 		assert.equal(existsResult1, true)
 		if (existsResult1) {
 			await questPropertyInstance.burnNFT(accounts[5], 5, 1, {
-				from: accounts[5],
+				from: accounts[0],
 			})
 		}
 	})

@@ -116,7 +116,7 @@
         2377
       ],
       "IERC165Upgradeable": [
-        3433
+        3336
       ]
     },
     "id": 2378,
@@ -141,7 +141,7 @@
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
         "scope": 2378,
-        "sourceUnit": 3434,
+        "sourceUnit": 3337,
         "src": "128:58:9",
         "symbolAliases": [],
         "unitAlias": ""
@@ -154,7 +154,7 @@
               "id": 2341,
               "name": "IERC165Upgradeable",
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 3433,
+              "referencedDeclaration": 3336,
               "src": "269:18:9"
             },
             "id": 2342,
@@ -175,7 +175,7 @@
         "id": 2377,
         "linearizedBaseContracts": [
           2377,
-          3433
+          3336
         ],
         "name": "IERC1155ReceiverUpgradeable",
         "nameLocation": "238:27:9",
@@ -612,7 +612,7 @@
         2377
       ],
       "IERC165Upgradeable": [
-        3433
+        3336
       ]
     },
     "id": 2378,
@@ -637,7 +637,7 @@
         "nameLocation": "-1:-1:-1",
         "nodeType": "ImportDirective",
         "scope": 2378,
-        "sourceUnit": 3434,
+        "sourceUnit": 3337,
         "src": "128:58:9",
         "symbolAliases": [],
         "unitAlias": ""
@@ -650,7 +650,7 @@
               "id": 2341,
               "name": "IERC165Upgradeable",
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 3433,
+              "referencedDeclaration": 3336,
               "src": "269:18:9"
             },
             "id": 2342,
@@ -671,7 +671,7 @@
         "id": 2377,
         "linearizedBaseContracts": [
           2377,
-          3433
+          3336
         ],
         "name": "IERC1155ReceiverUpgradeable",
         "nameLocation": "238:27:9",
@@ -1107,7 +1107,7 @@
   },
   "networks": {},
   "schemaVersion": "3.4.4",
-  "updatedAt": "2021-12-31T12:37:49.790Z",
+  "updatedAt": "2021-12-31T13:25:56.075Z",
   "devdoc": {
     "details": "_Available since v3.1._",
     "kind": "dev",
