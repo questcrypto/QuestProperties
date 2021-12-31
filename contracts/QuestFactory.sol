@@ -59,6 +59,7 @@ contract QuestFactory is Initializable, OwnableUpgradeable, PausableUpgradeable,
       abi.encodeWithSelector(QuestProperties(address(0)).initialize.selector, 
       treasury, 
       upgrader, 
+      admin,
       uri, 
       _contractName, 
       _description)

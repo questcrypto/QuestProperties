@@ -197,4 +197,21 @@ contract("Quest Factory (test)", function (accounts) {
 		const supplyOfRightId5 = await questPropertyInstance.totalSupply(5);
 		assert.equal(supplyOfRightId5, 1);
 	})
+
+	//----->Testing mint and burn on some random holder address<-----//
+	it("Testing minting and burning into random account", async() => {
+		//Any account other than the treasury will fail, because the owner can only call the burnNFTs() function
+		//And it is also restricted to the treasury admin as of now, leaving one case of the treasury owning the token
+		//and treasury controls the burning and minting
+		await questPropertyInstance.mintNFT(accounts[5], 5, "0x0", 60, {
+			from: accounts[0],
+		})
+		let existsResult1 = await questPropertyInstance.exists(5)
+		assert.equal(existsResult1, true)
+		if (existsResult1) {
+			await questPropertyInstance.burnNFT(accounts[5], 5, 1, {
+				from: accounts[5],
+			})
+		}
+	})
 })
