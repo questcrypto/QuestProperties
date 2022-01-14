@@ -56,7 +56,7 @@ contract QuestProperties is
 
     //Snapshot of property details
     struct Property {
-        bytes parentHash;
+        string parentHash;
         address propAddress;
         Token[] tokens;
     }
@@ -73,7 +73,7 @@ contract QuestProperties is
     //Ensure property is deployed only once.
     mapping(string => bool) private propertyExists;
 
-    event PropertyAdded(uint256 propertyId, address property, bytes MerkleTree);
+    event PropertyAdded(uint256 propertyId, address property, string MerkleTree);
 
     //List of available tokens ids & their crossponding names
     uint256 public constant TITLE = 0;
@@ -85,13 +85,16 @@ contract QuestProperties is
     
     
     /**
+     *@param hoa address, is the contract admin role
      *@param treasury address, responsible for minting tokens
      *@param upgrader address, responsible for upgrading to next version
      *@param uri string, is json that represent the  physical property"https://game.example/api/item/{id}.json"
+     *@param _parentHash string, hash generated from merkle tree that list all prop. details
+     *@param _propAddress address, single address that represent ownership of physical property
      *@param _contractName string, unique name given to each property
      *@param _description string, unique description that consist of tax id & other parameters.
      *
-     *@dev DEFAULT_ADMIN_ROLE is HOA, it is the admin role for all roles, which means that only
+     *@dev CONTRACT_ADMIN_ROLE is HOA, it is the admin role for all roles, which means that only
      * accounts with this role will be able to grant or revoke other roles & also it's own admin.
      */
     function initialize(
@@ -99,7 +102,7 @@ contract QuestProperties is
         address treasury,
         address upgrader,
         string memory uri,
-        bytes memory _parentHash, 
+        string memory _parentHash, 
         address _propAddress,
         string memory _contractName,
         string memory _description
@@ -133,17 +136,12 @@ contract QuestProperties is
     }
 
 
-    //@Arhan: cooperate with FE to support Interfaces
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(
-            ERC1155Upgradeable,
-            AccessControlUpgradeable,
-            ERC1155ReceiverUpgradeable
-        )
-        returns (bool)
-    {
+    //UIteam 
+    function supportsInterface(bytes4 interfaceId) public view override(
+        ERC1155Upgradeable,
+        AccessControlUpgradeable,
+        ERC1155ReceiverUpgradeable
+        ) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 
@@ -162,7 +160,6 @@ contract QuestProperties is
         return QuestProperties.totalSupply(id) > 0;
     }
 
-    //Increment the version number in case of upgrading only
     function version() pure public virtual returns (string memory) {
         return 'Startegic Quest Crypto V1';
     }
@@ -187,13 +184,12 @@ contract QuestProperties is
         uint256 id,
         bytes memory data,
         uint256 price
-    )
+        ) 
         external
         payable
         virtual
         onlyRole(TREASURY_ROLE)
-        returns (uint256, uint256)
-    {
+        returns (uint256, uint256) {
         require(
             !exists(id) && id <= availableTokens.length,
             "Quest: token already minted or out of range"
@@ -225,13 +221,12 @@ contract QuestProperties is
         uint256[] memory amounts,
         bytes memory data,
         uint256[] memory prices
-    )
+        )
         external
         payable
         virtual
         onlyRole(TREASURY_ROLE)
-        returns (uint256[] memory, uint256[] memory)
-    {
+        returns (uint256[] memory, uint256[] memory){
         require(
             ids.length == prices.length && ids.length == prices.length,
             "Quest: ids, amounts, & prices length mismatch"
@@ -256,15 +251,12 @@ contract QuestProperties is
      *
      *Requirements: 
      * - Only TREASURY_ROLE 
-     * - caller is the owner or approved operator
      * - token id exists, have been minted before
-     * - must have at least `amount` tokens of token type `id`
      */
-    function burnNFT(uint256 id, uint256 amount) external virtual onlyRole(TREASURY_ROLE) {
+    function burnNFT(uint256 id) external virtual onlyRole(TREASURY_ROLE) {
         require(exists(id), "Quest: NFT does not exist");
-        require(isApprovedForAll(address(this), msg.sender),"Quest: caller is not approved");
 
-        _burn(address(this), id, amount);
+        _burn(address(this), id, 1);
     }
 
 
@@ -273,14 +265,12 @@ contract QuestProperties is
      *
      * Requirements: 
      * - Only TREASURY_ROLE
-     * - caller is the owner of approved operator
+     * - length of ids and amounts must match
      */
-    function burnBatchNFTs(address from, uint256[] memory ids, uint256[] memory amounts) external virtual onlyRole(TREASURY_ROLE) {
-        require(
-            from == _msgSender() || isApprovedForAll(from, _msgSender()),
-            "Quest: caller is not owner nor approved"
-        );
-        _burnBatch(from, ids, amounts);
+    function burnBatchNFTs(uint256[] memory ids, uint256[] memory amounts) external virtual onlyRole(TREASURY_ROLE) {
+        require(ids.length == amounts.length, 'Quest: ids and amounts mismatch');
+
+        _burnBatch(address(this), ids, amounts);
     }
 
     /**
@@ -315,7 +305,7 @@ contract QuestProperties is
         uint256 amount,
         bytes memory data
     ) external payable onlyRole(CONTRACT_ADMIN_ROLE) {
-        require(balanceOf(address(this), id) >= amount, 'Quest: balance is not enought');
+        require(balanceOf(address(this), id) >= amount, 'Quest: balance is not enough');
         require(to != address(0), "Quest: transfer to zero address");
         _safeTransferFrom(address(this), to, id, amount, data);
     }

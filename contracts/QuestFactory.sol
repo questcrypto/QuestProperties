@@ -42,8 +42,8 @@ contract QuestFactory is Initializable, OwnableUpgradeable, PausableUpgradeable,
    *Emits an event with proxy address created.
    *pushes the new address to array of proxies
    */
-  function deployPropertyContract(address treasury, address upgrader, address hoa,  string memory uri, bytes memory _parentHash, address _propAddress, string memory _contractName, string memory _description) public virtual whenNotPaused returns(address) {
-    ERC1967Proxy proxy= new ERC1967Proxy(logicAddress, abi.encodeWithSelector(QuestProperties.initialize.selector, treasury, upgrader, hoa, uri, _parentHash, _propAddress, _contractName, _description));
+  function deployPropertyContract(address hoa, address treasury, address upgrader, string memory uri, bytes memory _parentHash, address _propAddress, string memory _contractName, string memory _description) public virtual whenNotPaused returns(address) {
+    ERC1967Proxy proxy= new ERC1967Proxy(logicAddress, abi.encodeWithSelector(QuestProperties.initialize.selector, hoa, treasury, upgrader, uri, _parentHash, _propAddress, _contractName, _description));
     
 
     emit  contractDeployed(address(proxy));
@@ -69,4 +69,3 @@ contract QuestFactory is Initializable, OwnableUpgradeable, PausableUpgradeable,
   }
 
 }
-
