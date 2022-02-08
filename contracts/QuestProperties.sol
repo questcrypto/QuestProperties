@@ -186,7 +186,6 @@ contract QuestProperties is
         uint256 price
         ) 
         external
-        payable
         virtual
         onlyRole(TREASURY_ROLE)
         returns (uint256, uint256) {
@@ -223,7 +222,6 @@ contract QuestProperties is
         uint256[] memory prices
         )
         external
-        payable
         virtual
         onlyRole(TREASURY_ROLE)
         returns (uint256[] memory, uint256[] memory){
@@ -304,7 +302,7 @@ contract QuestProperties is
         uint256 id,
         uint256 amount,
         bytes memory data
-    ) external payable onlyRole(CONTRACT_ADMIN_ROLE) {
+    ) external onlyRole(CONTRACT_ADMIN_ROLE) {
         require(balanceOf(address(this), id) >= amount, 'Quest: balance is not enough');
         require(to != address(0), "Quest: transfer to zero address");
         _safeTransferFrom(address(this), to, id, amount, data);
